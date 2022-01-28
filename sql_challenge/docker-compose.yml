@@ -1,0 +1,16 @@
+version: '2'
+services:
+  postgres:
+    image: postgres:latest
+    restart: always
+    volumes:
+      - './postgres_data:/var/lib/postgresql/data'
+      - './init_scripts/create_tables.sh:/docker-entrypoint-initdb.d/create_tables.sh'
+      - './init_scripts/insert_values.sh:/docker-entrypoint-initdb.d/insert_values.sh'
+    environment:
+      - POSTGRES_PASSWORD=mariano
+      - POSTGRES_USER=mariano
+      - POSTGRES_DB=meli
+      - POSTGRES_INITDB_ARGS="--auth-host=md5"
+    ports:
+      - '5432:5432'
