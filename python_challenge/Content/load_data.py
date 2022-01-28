@@ -2,16 +2,16 @@ from postgres_hook import PostgresHook
 
 db_hook = PostgresHook()
 files = [
-    "Datasets/athletes.xlsx",
-    "Datasets/coaches.xlsx",
-    "Datasets/gender.xlsx",
-    "Datasets/medals.xlsx",
-    "Datasets/teams.xlsx",
+    "datasets/athletes.xlsx",
+    "datasets/coaches.xlsx",
+    "datasets/gender.xlsx",
+    "datasets/medals.xlsx",
+    "datasets/teams.xlsx",
 ]
 
 db_hook.insert_files(files)
 
-data = {"Name": "WANCHOPE Abila", "NOC": "Argentina", "Discipline": "Football"}
+data = {"Name": "LIONEL Messi", "NOC": "Argentina", "Discipline": "Football"}
 
 table = db_hook.get_table("athletes")
 engine = db_hook.get_engine()

@@ -3,7 +3,7 @@
 ## Python Challenge
 
 Guia para iniciar la base de datos y el script de carga:
-- En el directorio python_challenge donde se encuentra el docker_compose.yml ejecutar el comando:
+- En el directorio python_challenge donde se encuentra el docker-compose.yml ejecutar el comando:
 ```
 docker compose up -d
 ```
@@ -18,7 +18,7 @@ docker exec -it python_challenge-postgres-1 psql -U mariano -W test
 ## SQL Challenge
 
 Guia para iniciar la base de datos y el script de carga:
-- En el directorio sql_challenge donde se encuentra el docker_compose.yml ejecutar el comando:
+- En el directorio sql_challenge donde se encuentra el docker-compose.yml ejecutar el comando:
 ```
 docker compose up -d
 ```

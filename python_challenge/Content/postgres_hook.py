@@ -101,5 +101,5 @@ class PostgresHook:
     def get_table(self, table: str) -> Table:
         return Table(table, self.metadata, autoload=True, autoload_with=self.engine)
 
-    def get_engine(self):
+    def get_engine(self) -> Engine:
         return self.engine
