@@ -1,44 +1,20 @@
-WITH cell_items AS 
-(
-	SELECT item_id
-	FROM categoryitem
-	WHERE category_name = 'Celular'
-), order_values AS
-(
-	SELECT total_values.*, 
-		   RANK() OVER (partition by total_values.month order by total_values.total_selled desc) as rank
-	FROM (SELECT 
-			a.month,
-			a.seller_id,
-			SUM(a.total_selled) as total_selled,
-			SUM(a.total_order_qty) as total_order_qty, 
-			SUM(a.total_product_selled) as total_product_selled
-	 	FROM (
-				SELECT 
-					b.seller_id, 
-					DATE_TRUNC('month',a.date_ordered) as month,
-					COUNT(a.item_id) as total_order_qty, 
-					SUM(a.quantity) as total_product_selled, 
-					SUM(a.quantity * b.price_per_unit) as total_selled
-				FROM orders a 
-				LEFT JOIN items b
-				ON a.item_id = b.item_id
-				WHERE a.item_id in (SELECT * FROM cell_items) AND EXTRACT('year' FROM a.date_ordered) = '2020'
-				GROUP BY DATE_TRUNC('month', a.date_ordered), b.seller_id, a.item_id
-			 ) a
-	 	GROUP BY a.month, a.seller_id) total_values
+WITH temp AS (
+	SELECT 
+		c.seller_id, 
+		EXTRACT(year FROM a.date_ordered) years,
+		EXTRACT(month FROM a.date_ordered) months,
+		d.first_name,
+		d.last_name,
+		COUNT(a.order_id) sales_count,
+		COUNT(c.item_id) items_count,
+		SUM(c.price_per_unit*a.quantity) amount_sold,
+		ROW_NUMBER() OVER (PARTITION BY EXTRACT(month FROM a.date_ordered) ORDER BY SUM(c.price_per_unit*a.quantity) DESC) rank
+	FROM orders a
+	INNER JOIN categoryitem b ON a.item_id=b.item_id
+	INNER JOIN items c on c.item_id=a.item_id
+	INNER JOIN customers d ON d.customer_id=c.seller_id
+	WHERE a.date_ordered BETWEEN '2020-01-01' AND '2020-12-31' AND b.category_name='Celular'
+	GROUP BY 1,2,3,4,5
+	ORDER BY months DESC, amount_sold DESC
 )
-
-SELECT  '2020' as year, 
-		EXTRACT('month' FROM a.month) AS month, 
-		a.rank,
-		b.first_name, 
-		b.last_name, 
-		a.total_selled, 
-		a.total_order_qty, 
-		a.total_product_selled
-FROM order_values a 
-LEFT JOIN customers b 
-ON a.seller_id = b.customer_id
-WHERE a.rank <= 5
-ORDER BY a.month, a.rank;
+SELECT * FROM temp WHERE rank <= 5;

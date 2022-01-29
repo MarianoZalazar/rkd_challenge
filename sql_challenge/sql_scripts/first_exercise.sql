@@ -1,17 +1,14 @@
 -- I had to comment out the condition checking for the birthday date because the mock data is not big enough
 -- Also the check for the selled count is '>5' for the same reason
 
-WITH greater_than_1500 AS (
-	SELECT item_id
-	FROM orders
-	WHERE date_ordered BETWEEN '2020-01-01' AND '2020-01-31'
-	GROUP BY item_id
-	HAVING COUNT(*) > 5
-)
-SELECT b.*
-FROM items a
-LEFT JOIN customers b
-ON a.seller_id = b.customer_id
-WHERE a.item_id in (SELECT * FROM greater_than_1500);
-	-- AND EXTRACT('month' FROM b.birth_date) = EXTRACT('month' FROM (current_date - INTERVAL '3 days')) 
-	-- AND EXTRACT('day' FROM b.birth_date) = EXTRACT('day' FROM (current_date - INTERVAL '3 days'));
+SELECT b.seller_id
+FROM orders a 
+LEFT JOIN items b ON a.item_id=b.item_id
+LEFT JOIN customers c ON c.customer_id = b.seller_id
+WHERE a.date_ordered BETWEEN '2020-01-01' AND '2020-01-31' 
+	AND b.item_id IS NOT NULL
+	-- AND EXTRACT('month' FROM c.birth_date) = EXTRACT('month' FROM (current_date)) 
+	-- AND EXTRACT('day' FROM c.birth_date) = EXTRACT('day' FROM (current_date));
+GROUP BY b.seller_id
+HAVING COUNT(b.seller_id)>5;
+
